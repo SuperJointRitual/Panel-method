@@ -1,0 +1,4 @@
+from .geometry import define_geometry#, define_airfoil_geometry
+from .influence import compute_influence_coefficients,compute_influence_coefficients_2
+from .solver import solve_circulation, compute_velocity_and_pressure, compute_lift_coefficient, compute_velocity_and_pressure_3d
+from .postprocessing import plot_cp_distribution, plot_velocity_distribution, plot_induced_velocity_vectors, plot_convergence
