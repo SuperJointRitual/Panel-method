@@ -14,9 +14,7 @@ def compute_influence_coefficients(N, x, y, x_mid, y_mid, n_vect, t_vect):
             # print('|n_vect|, should give one:', np.sqrt(n_induced[0]**2 + n_induced[1]**2))
             # assert np.dot(t_induced, n_induced) == 0
             AN[i, j] = -np.dot(n_vect[i], n_induced) / (2 * np.pi * r)
-            AN_3d[0,j,i] = -np.dot(n_vect[i], n_induced)/(2*np.pi*r)
-            AN_3d[1,j,i] = -np.dot(t_vect[i], t_induced)/(2*np.pi*r)
-            # AN_3d[:,j,i] = -n_induced/(2*np.pi*r)
+            AN_3d[:,j,i] = -n_induced/(2*np.pi*r)
     AN[-1, :] = 0
     AN[-1, 0] = 1
     AN[-1, -1] = 1
