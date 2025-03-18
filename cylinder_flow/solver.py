@@ -35,14 +35,12 @@ def compute_velocity_and_pressure_3d(N, V_inf, theta_mid, AN, AN_3d, Gamma,AOA,t
     V_inf  * np.array([[np.cos(AOA)], [np.sin(AOA)]])
     )    
     #add the velocity correction to vel_vect (shape (2, np) + (2, 1))
-    vel_vect -= velocity_correction 
+    vel_vect += velocity_correction 
     
     print('Shape of vel_vect after adding velocity correction:', np.shape(vel_vect))
-    # print(vel_vect)
-    # Calculate the velocity magnitude
-    Vt = np.linalg.norm(vel_vect, axis=0)# This gives a vector of shape (np), magnitude of Vel
 
-    Vt = vel_vect[1,:] # taking only the component in y
+    # Compute the tangletial velocity with the tangential vector (cos(theta),sin(theta))
+    Vt =  vel_vect[0,:]*np.cos(theta_mid) + vel_vect[1,:]*np.sin(theta_mid) # 
 
     # Calculate Cp (coefficient of pressure)
     Cp = 1 - (Vt/ V_inf) ** 2

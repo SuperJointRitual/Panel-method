@@ -8,10 +8,19 @@ def define_geometry(N, R):
     ds_exact = np.sqrt(np.diff(x)**2 + np.diff(y)**2)
     x_mid = (x[:-1] + x[1:]) / 2
     y_mid = (y[:-1] + y[1:]) / 2
-    theta_mid = np.arctan2(y_mid, x_mid)
-    R_pan = np.sqrt(x_mid**2 + y_mid**2)
-    t_vect = np.column_stack((x_mid / R_pan, y_mid / R_pan))
-    n_vect = np.column_stack((t_vect[:, 1], -t_vect[:, 0]))
+    # theta_mid = np.arctan2(y_mid*2, x_mid*2)
+
+
+    # Panel normal vectors
+    dx = np.diff(x)
+    dy = np.diff(y)
+    theta_mid = np.arctan2(dy, dx)
+    lengths = np.sqrt(dx**2 + dy**2)
+    n_vect = np.array([dy, -dx]) / lengths
+    n_vect = n_vect.T
+    t_vect = np.array([dx, dy]) / lengths
+    t_vect = t_vect.T
+
     return x, y, x_mid, y_mid, theta_mid, t_vect, n_vect
 
 
