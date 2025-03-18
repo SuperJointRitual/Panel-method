@@ -2,7 +2,7 @@ import numpy as np
 import cylinder_flow as cf
 
 def main():
-    N = 100
+    N = 2500
     R = 1.0
     V_inf = 1.0
     alpha = 0
