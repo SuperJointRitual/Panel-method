@@ -40,7 +40,7 @@ def compute_velocity_and_pressure_3d(N, V_inf, theta_mid, AN, AN_3d, Gamma,AOA,t
     print('Shape of vel_vect after adding velocity correction:', np.shape(vel_vect))
 
     # Compute the tangletial velocity with the tangential vector (cos(theta),sin(theta))
-    Vt =  vel_vect[0,:]*np.cos(theta_mid) + vel_vect[1,:]*np.sin(theta_mid) # 
+    Vt =  vel_vect[0,:]*np.sin(theta_mid) - vel_vect[1,:]*np.cos(theta_mid) # 
 
     # Calculate Cp (coefficient of pressure)
     Cp = 1 - (Vt/ V_inf) ** 2
@@ -50,7 +50,7 @@ def compute_lift_coefficient(Gamma, V_inf, R,x):
     Cl = 2 * np.sum(Gamma) / (V_inf * 2 * np.pi * R)
     return Cl
 
-def compute_lift_coefficient(Gamma, V_inf, R,x):
-    Cl = 2 * np.sum(Gamma) / (V_inf * 2 * np.pi * R)
-    # Cl = 2* Gamma / (np.abs(np.max(x)) - np.abs(np.min(x)) )
-    return Cl
+# def compute_lift_coefficient(Gamma, V_inf, R,x):
+#     Cl = 2 * np.sum(Gamma) / (V_inf * 2 * np.pi * R)
+#     # Cl = 2* Gamma / (np.abs(np.max(x)) - np.abs(np.min(x)) )
+#     return Cl

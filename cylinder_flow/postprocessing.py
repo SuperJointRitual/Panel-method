@@ -63,3 +63,15 @@ def plot_convergence(N_values, Cl_values):
     plt.legend()
     plt.grid(True)
     plt.show()
+
+
+def plot_airfoil(x_airfoil, y_airfoil):
+    plt.figure(figsize=(8, 4))
+    plt.plot(x_airfoil, y_airfoil, 'bo-', label='Airfoil Shape')
+    plt.xlabel("x")
+    plt.ylabel("y")
+    plt.title("Airfoil Shape")
+    plt.axis("equal")
+    plt.legend()
+    plt.grid()
+    plt.show()

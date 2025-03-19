@@ -2,14 +2,15 @@ import numpy as np
 import cylinder_flow as cf
 
 def main():
-    N = 2500
+    N = 500
     R = 1.0
-    V_inf = 1.0
-    alpha = 0
+    V_inf = 1
+    alpha = np.deg2rad(0)
+
 
     # Geometry definition
     x, y, x_mid, y_mid, theta_mid, t_vect, n_vect = cf.define_geometry(N, R)
-    # x, y, x_mid, y_mid, theta_mid, t_vect, n_vect = cf.define_airfoil_geometry(N/2)
+    # x, y, x_mid, y_mid, theta_mid, t_vect, n_vect = cf.define_airfoil_geometry(N,airfoil_type="NACA2412")
     # Influence coefficients
     AN, AN_3d  = cf.compute_influence_coefficients(N, x, y, x_mid, y_mid, n_vect,t_vect)
     print('Shape of influence matrix 3D: ', np.shape(AN_3d))
@@ -17,7 +18,7 @@ def main():
     # print('Lasto row of influence matrix',AN[-1,:])
     # Solve circulation
     Gamma = cf.solve_circulation(N, AN, V_inf, alpha, n_vect)
-    print('Sum of circulations: ',np.sum(Gamma))
+    print('Sum of circulations: ',(Gamma))
     # print(np.shape(Gamma))
 
     # Compute velocity and pressure coefficient
@@ -34,6 +35,7 @@ def main():
 
     # Plot induced velocity vectors
     cf.plot_induced_velocity_vectors(N, R, x, y)
+    cf.plot_airfoil(x,y)
 
 if __name__ == "__main__":
     main()
