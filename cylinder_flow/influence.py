@@ -1,54 +1,112 @@
 import numpy as np
+import cylinder_flow as cf
 
-def compute_influence_coefficients(N, x, y, x_mid, y_mid, n_vect, t_vect):
-    AN = np.zeros((len(x), len(x)))
-    AN_3d = np.zeros((2, len(x), len(x_mid)))
-    t_induced_array = np.zeros((len(x_mid), 2, len(x)))  # Array to store t_induced values
-    for i in range(len(x_mid)):
-        for j in range(len(x)):
-            dx = x_mid[i] - x[j]
-            dy = y_mid[i] - y[j]
-            r = np.sqrt(dx**2 + dy**2)
-            t_induced = np.array([dx / r, dy / r])
-            n_induced = np.array([dy/r , -dx /r])
-            # print('|n_vect|, should give one:', np.sqrt(n_induced[0]**2 + n_induced[1]**2))
-            # assert np.dot(t_induced, n_induced) == 0
-            AN[i, j] = -np.dot(n_vect[i], n_induced) / (2 * np.pi * r)
-            AN_3d[:,j,i] = -n_induced/(2*np.pi*r)
-    AN[-1, :] = 0
+
+def compute_AN_matrix(N, x, y, x_mid, y_mid, n_vect):
+    """
+    Compute the influence coefficient matrix AN and store the induced normal vectors (n_induced).
+
+    Parameters:
+    -----------
+    N : int
+        Number of panels.
+    x, y : ndarray
+        x and y coordinates of panel endpoints.
+    x_mid, y_mid : ndarray
+        x and y coordinates of panel midpoints.
+    n_vect : ndarray
+        Normal vectors at the panel midpoints.
+
+    Returns:
+    --------
+    AN : ndarray
+        Influence coefficient matrix of shape (N+1, N+1).
+    n_induced_array : ndarray
+        Array of induced normal vectors at each panel.
+    """
+    AN = np.zeros((N + 1, N + 1))
+    n_induced_array = np.zeros((N, 2))  # Array to store induced normal vectors
+    AN_3d = compute_AN_3d_matrix(N, x, y, x_mid, y_mid)
+
+    for i in range(N):
+        for j in range(N + 1):
+            # dx = x_mid[i] - x[j]
+            # dy = y_mid[i] - y[j]
+            # r = np.sqrt(dx**2 + dy**2)
+
+            # if np.isclose(r, 0):  # Avoid division by zero
+            #     continue
+
+            # # Calculate the induced normal vector
+            # n_induced = np.array([dy / r, -dx / r])
+            # n_induced_array[i] = n_induced  # Store the induced normal vector
+
+            # Update the influence matrix
+            AN[i, j] = np.dot(n_vect[i,:].T, AN_3d[:,i,j]) 
+
+    AN[-1, :] = 0  # Boundary condition enforcement
     AN[-1, 0] = 1
     AN[-1, -1] = 1
-    return AN, AN_3d
 
-def compute_influence_coefficients_2(N, x, y, x_mid, y_mid, n_vect, t_vect):
-    AN = np.zeros((len(x), len(x)))
-    AN_3d = np.zeros((2, len(x), len(x_mid)))
-    t_induced_array = np.zeros((len(x_mid), 2, len(x)))  # Array to store t_induced values
+    return AN, n_induced_array
 
-    for i in range(len(x_mid)):
-        for j in range(len(x)):
-            # Calculate the distance between x_mid[i], y_mid[i] and x[j], y[j]
+def compute_AN_3d_matrix(N, x, y, x_mid, y_mid):
+    """
+    Compute the 3D influence coefficient matrix AN_3d.
+
+    Parameters:
+    -----------
+    N : int
+        Number of panels.
+    x, y : ndarray
+        x and y coordinates of panel endpoints.
+    x_mid, y_mid : ndarray
+        x and y coordinates of panel midpoints.
+
+    Returns:
+    --------
+    AN_3d : ndarray
+        3D influence coefficient matrix of shape (2, N+1, N).
+    """
+    AN_3d = np.zeros((2, N , N + 1))
+
+    for i in range(N):
+        for j in range(N + 1):
             dx = x_mid[i] - x[j]
             dy = y_mid[i] - y[j]
             r = np.sqrt(dx**2 + dy**2)
-            
-            # Calculate the normal and tangential influence coefficients
-            
-            # Normal vector at midpoint, pointing radially outward
-            magnitude = np.sqrt(x_mid[i]**2 + y_mid[i]**2)
-            normal_vector = np.array([x_mid[i], y_mid[i]]) / magnitude  # Unit normal vector
-            
-            # Tangential vector at midpoint, perpendicular to the radius
-            t_vect_induced = np.array([-dy, dx])  # Rotate by 90 degrees
-            t_vect_induced /= np.linalg.norm(t_vect_induced)  # Normalize the tangential vector
-            
-            # Example of using the tangential and normal vectors to compute influence coefficients
-            # Here we assume we're calculating the influence of tangential velocity:
-            t_induced_array[i, :, j] = t_vect_induced  # Store the induced tangential vectors
-            
-            # You can extend this by adding specific aerodynamic models for influence coefficients.
-            # For now, we're just assigning them to the array.
-            AN_3d[0, j, i] = np.dot(n_vect[i], normal_vector)/(2*np.pi*r)  # Normal influence coefficient (example)
-            AN_3d[1, j, i] = np.dot(t_vect[i], t_vect_induced)/(2*np.pi*r)  # Tangential influence coefficient (example)
 
-    return AN_3d, t_induced_array
+            if np.isclose(r, 0):  # Avoid division by zero
+                continue
+
+
+            n_induced = np.array([dy / r, -dx / r])
+            AN_3d[:, i, j] = n_induced / (2 * np.pi * r)
+
+    return AN_3d
+
+# Unit Tests
+def test_compute_AN_matrix():
+    N, R = 10, 1.0
+    x, y = cf.cylinder(N, R)
+    x_mid, y_mid, theta_mid, t_vect, n_vect, x,y = cf.pre_processing(x, y)
+
+    AN,_ = compute_AN_matrix(N, x, y, x_mid, y_mid, n_vect)
+
+    assert AN.shape == (N + 1, N + 1), "AN matrix shape is incorrect."
+    assert np.all(np.isfinite(AN)), "AN matrix contains NaN or Inf values."
+    assert np.isclose(AN[-1, 0], 1) and np.isclose(AN[-1, -1], 1), "Boundary conditions not enforced correctly."
+
+
+def test_compute_AN_3d_matrix():
+    N, R = 10, 1.0
+    x, y = cf.cylinder(N, R)
+    x_mid, y_mid, _, _, _, x,y = cf.pre_processing(x, y)
+
+    AN_3d = compute_AN_3d_matrix(N, x, y, x_mid, y_mid)
+
+    assert AN_3d.shape == (2, N , N+1), "AN_3d matrix shape is incorrect."
+    assert np.all(np.isfinite(AN_3d)), "AN_3d matrix contains NaN or Inf values."
+
+    # Check that normal vector components are small at large distances
+    assert np.all(np.abs(AN_3d) < 1), "AN_3d contains unexpected large values."

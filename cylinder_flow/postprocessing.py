@@ -21,35 +21,47 @@ def plot_velocity_distribution(theta, Vt):
     plt.grid()
     plt.show()
 
-def plot_induced_velocity_vectors(N, R, x, y):
-    theta_range = np.linspace(0, 2 * np.pi, 100)
-    x_subset = R * np.cos(theta_range)
-    y_subset = R * np.sin(theta_range)
-    x_mid_subset = (x_subset[:-1] + x_subset[1:]) / 2
-    y_mid_subset = (y_subset[:-1] + y_subset[1:]) / 2
-    R_pan_subset = np.sqrt(x_mid_subset**2 + y_mid_subset**2)
-    t_vect_subset = np.column_stack((x_mid_subset / R_pan_subset, y_mid_subset / R_pan_subset))
-    n_vect_subset = np.column_stack((t_vect_subset[:, 1], -t_vect_subset[:, 0]))
-    n_induced = np.zeros((len(x_mid_subset), 2))
-    t_induced = np.zeros((len(x_mid_subset), 2))
-    for i in range(len(x_mid_subset)):
-        for j in range(N):
-            dx = x_mid_subset[i] - x[j]
-            dy = y_mid_subset[i] - y[j]
-            r = np.sqrt(dx**2 + dy**2)
-            t_induced[i] = np.array([dx / r, dy / r])
-            n_induced[i] = np.array([dy / r, -dx / r])
-    plt.figure(figsize=(8, 8))
-    plt.plot(x_subset, y_subset, marker='.', label='Cylinder Surface', color='black')
-    plt.quiver(x_mid_subset, y_mid_subset, t_induced[:, 0], t_induced[:, 1], color='blue', scale=10, label='Induced Tangential Vectors')
-    plt.quiver(x_mid_subset, y_mid_subset, n_induced[:, 0], n_induced[:, 1], color='red', scale=10, label='Induced Normal Vectors')
-    plt.xlabel('X')
-    plt.ylabel('Y')
-    plt.title('Induced Normal and Tangential Vectors on Cylinder')
-    plt.gca().set_aspect('equal', adjustable='box')
+def plot_induced_velocity_vectors(x, y, n_induced_array):
+    """
+    Plot the induced normal velocity vectors for each panel.
+
+    Parameters:
+    -----------
+    x, y : ndarray
+        x and y coordinates of the panel endpoints.
+    n_induced_array : ndarray
+        Array of induced normal vectors at each panel.
+    """
+    # Check that the lengths of x, y, and n_induced_array are consistent
+    if len(x) != len(y) or len(n_induced_array) != len(x) - 1:
+        raise ValueError("Inconsistent array lengths. Ensure x, y, and n_induced_array match.")
+    
+    # Plot each induced velocity vector at each panel midpoint
+    plt.figure(figsize=(20, 18))
+    for i in range(len(n_induced_array)):
+        # Midpoint coordinates of the current panel
+        x_mid = (x[i] + x[i + 1]) / 2
+        y_mid = (y[i] + y[i + 1]) / 2
+        
+        # Induced velocity vector
+        n_induced = n_induced_array[i]
+        
+        # Plot the vector at the panel midpoint
+        if i == 1: 
+            plt.quiver(x_mid, y_mid, n_induced[0], n_induced[1], angles='xy', scale_units='xy', scale=5, color='b', alpha=0.7,label = "normal induction vector of the last panel")
+        else:
+            plt.quiver(x_mid, y_mid, n_induced[0], n_induced[1], angles='xy', scale_units='xy', scale=5, color='b', alpha=0.7)
+    # Plot the markers for the panel endpoints
+    plt.scatter(x, y, color='r', label="Panel Endpoints", zorder=5)  # Red markers for endpoints
+    # Labels and grid
+    plt.title("Induced Velocity Vectors")
+    plt.xlabel("x")
+    plt.ylabel("y")
+    plt.grid(True)
+    plt.axis("equal")
     plt.legend()
-    plt.grid()
     plt.show()
+
 
 def plot_convergence(N_values, Cl_values):
     """Plot Cl convergence for different values of N."""
@@ -63,3 +75,17 @@ def plot_convergence(N_values, Cl_values):
     plt.legend()
     plt.grid(True)
     plt.show()
+
+    
+def plot_shape(x_mid, y_mid,n_vect,t_vect):
+    plt.figure(figsize=(8, 6))
+    plt.scatter(x_mid, y_mid, color ='b', label='',zorder = 2)
+    plt.quiver(x_mid, y_mid, n_vect[:,0], n_vect[:,1], angles='xy', scale_units='xy', scale=5, color='r', alpha=0.7,label = 'normal')
+    plt.xlabel('x')
+    plt.quiver(x_mid, y_mid, t_vect[:,0], t_vect[:,1], angles='xy', scale_units='xy', scale=1, color='g', alpha=0.7,label = 'tangential')
+    plt.ylabel('y')
+    plt.title('Midpoints')
+    plt.axis("equal")
+    plt.grid()
+    plt.show()
+

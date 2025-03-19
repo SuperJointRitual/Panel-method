@@ -1,4 +1,5 @@
-from .geometry import define_geometry#, define_airfoil_geometry
-from .influence import compute_influence_coefficients,compute_influence_coefficients_2
-from .solver import solve_circulation, compute_velocity_and_pressure, compute_lift_coefficient, compute_velocity_and_pressure_3d
-from .postprocessing import plot_cp_distribution, plot_velocity_distribution, plot_induced_velocity_vectors, plot_convergence
+from .geometry import cylinder, define_airfoil_geometry, pre_processing,test_cylinder, test_pre_processing
+from .influence import compute_AN_matrix, compute_AN_3d_matrix, test_compute_AN_matrix, test_compute_AN_3d_matrix
+from .solver import solve_circulation, compute_lift_coefficient, compute_tangential_velocity, compute_pressure_coefficient,compute_RHS,test_compute_RHS, test_solve_circulation,test_compute_tangential_velocity,test_compute_pressure_coefficient
+from .postprocessing import plot_cp_distribution, plot_velocity_distribution, plot_induced_velocity_vectors, plot_convergence, plot_shape
+
