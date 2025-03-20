@@ -58,7 +58,7 @@ def solve_circulation(AN, RHS):
 
 
 
-def compute_tangential_velocity(N, V_inf, theta_mid, AN_3d, Gamma, AOA):
+def compute_tangential_velocity(N, V_inf, theta_mid, AN_3d, Gamma, AOA, t_vect):
     """
     Compute the tangential velocity Vt at the panel midpoints.
 
@@ -102,9 +102,10 @@ def compute_tangential_velocity(N, V_inf, theta_mid, AN_3d, Gamma, AOA):
 
     
     # Compute tangential velocity component
-    Vt = vel_vect[0, :] * np.cos(theta_mid) + vel_vect[1, :] * np.sin(theta_mid)
+    Vt =   vel_vect[1, :] * t_vect[:,1] + vel_vect[0, :] * t_vect[:,0]
 
-    return Vt
+
+    return Vt, vel_vect
 
 def compute_pressure_coefficient(Vt, V_inf):
     """
@@ -171,14 +172,14 @@ def test_solve_circulation():
 def test_compute_tangential_velocity():
     N, V_inf, AOA = 10, 1.0, np.radians(5)
     x, y = cf.cylinder(N, 1.0)
-    x_mid, y_mid, theta_mid, _, n_vect, x,y = cf.pre_processing(x, y)
+    x_mid, y_mid, theta_mid, t_vect, n_vect, x,y = cf.pre_processing(x, y)
     
     AN_3d = cf.compute_AN_3d_matrix(N, x, y, x_mid, y_mid)
     RHS = cf.compute_RHS(N, V_inf, AOA, n_vect)
     AN,_ = cf.compute_AN_matrix(N, x, y, x_mid, y_mid, n_vect)
     Gamma = cf.solve_circulation(AN, RHS)
 
-    Vt = cf.compute_tangential_velocity(N, V_inf, theta_mid, AN_3d, Gamma, AOA)
+    Vt,_ = cf.compute_tangential_velocity(N, V_inf, theta_mid, AN_3d, Gamma, AOA,t_vect)
 
     assert Vt.shape == (N,), "Vt shape is incorrect."
     assert np.all(np.isfinite(Vt)), "Vt contains NaN or Inf values."
@@ -237,3 +238,6 @@ def test_solve_circulation():
     except ValueError as e:
         assert str(e) == "AN matrix is singular or ill-conditioned. Cannot solve for circulation."
 
+# def test_equation(RHS, vel_vect, n_vect ):
+#     assert (RHS + vel_vect)
+    

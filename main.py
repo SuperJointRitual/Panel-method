@@ -27,6 +27,8 @@ def main():
     Gamma = cf.solve_circulation(AN, RHS)
     print('Shape of influence matrix 3D: ', np.shape(AN_3d))
 
+  
+
     # print(AN_3d)
     # print('Lasto row of influence matrix',AN[-1,:])
     # Solve circulation
@@ -35,9 +37,10 @@ def main():
     # print(np.shape(Gamma))
 
     # Compute velocity and pressure coefficient
-    Vt = cf.compute_tangential_velocity(N, V_inf, theta_mid, AN_3d, Gamma, alpha)
+    Vt, vel_vect = cf.compute_tangential_velocity(N, V_inf, theta_mid, AN_3d, Gamma, alpha,t_vect)
     Cp = cf.compute_pressure_coefficient(Vt, V_inf)
   
+    # cf.test_equation(RHS, vel_vect, n_vect )
 
     # Plot results
     cf.plot_cp_distribution(np.linspace(0, 2 * np.pi, N+1), Cp)
