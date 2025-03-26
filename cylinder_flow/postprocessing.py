@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 
 def plot_cp_distribution(theta, Cp):
     plt.figure(figsize=(8, 6))
-    plt.plot(np.rad2deg(theta[:-1]), Cp, '-', label='$C_p$')
+    plt.plot(theta, Cp, '-', label='$C_p$')
     plt.xlabel('Theta (degrees)')
     plt.ylabel('$C_p$')
     plt.title('Pressure Coefficient Distribution around a Cylinder')
@@ -14,7 +14,7 @@ def plot_cp_distribution(theta, Cp):
 
 def plot_velocity_distribution(theta, Vt):
     plt.figure(figsize=(8, 6))
-    plt.plot(np.rad2deg(theta[:-1]), Vt, '-', label='$V_t$')
+    plt.plot(theta, Vt, '-', label='$V_t$')
     plt.xlabel('Theta (degrees)')
     plt.ylabel('$V_t$')
     plt.title('Tangential Velocity Distribution around a Cylinder')
@@ -82,10 +82,13 @@ def plot_shape(x_mid, y_mid,n_vect,t_vect):
     plt.scatter(x_mid, y_mid, color ='b', label='',zorder = 2)
     plt.quiver(x_mid, y_mid, n_vect[:,0], n_vect[:,1], angles='xy', scale_units='xy', scale=5, color='r', alpha=0.7,label = 'normal')
     plt.xlabel('x')
-    plt.quiver(x_mid, y_mid, t_vect[:,0], t_vect[:,1], angles='xy', scale_units='xy', scale=1, color='g', alpha=0.7,label = 'tangential')
+    plt.quiver(x_mid, y_mid, t_vect[:,0], t_vect[:,1], angles='xy', scale_units='xy', scale=5, color='g', alpha=0.7,label = 'tangential')
     plt.ylabel('y')
     plt.title('Midpoints')
+    plt.legend()
     plt.axis("equal")
+    plt.ylim(min(y_mid) - 0.3, max(y_mid) + 0.3)  # Increased y limits
+    plt.xlim(-0.25,1.25)  # Increased y limits
     plt.grid()
     plt.show()
 
