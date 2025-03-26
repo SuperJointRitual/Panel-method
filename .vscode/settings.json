@@ -1,0 +1,7 @@
+{
+    "python.testing.pytestArgs": [
+        "cylinder_flow"
+    ],
+    "python.testing.unittestEnabled": false,
+    "python.testing.pytestEnabled": true
+}

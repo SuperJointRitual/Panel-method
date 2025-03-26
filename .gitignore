@@ -1,0 +1,4 @@
+.env/
+.tool-versions
+__pycache__
+.pytest_cache
