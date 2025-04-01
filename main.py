@@ -24,7 +24,7 @@ def main():
     x, y = cf.cylinder(N, R)
     x_mid, y_mid, theta_mid, t_vect, n_vect,  x, y  = cf.pre_processing(x,y)
 
-    # x_mid, y_mid, theta_mid, tb_vect, n_vect,x,y = cf.define_airfoil_geometry(N,m, p, t)
+    # x_mid, y_mid, theta_mid, t_vect, n_vect,x,y = cf.define_airfoil_geometry(N,m, p, t)
     cf.plot_shape(x_mid,y_mid,n_vect,t_vect)
     print(np.shape(t_vect))
     
@@ -51,10 +51,10 @@ def main():
 
     # Plot results
     cf.plot_cp_distribution(np.linspace(0+1e-3, 2 * np.pi-1e-3, N ), Cp)
-    cf.plot_velocity_distribution(np.linspace(0+1e-3, 2 * np.pi-1e-3, N ), Vt)
+    cf.plot_velocity_distribution(np.linspace(0+1e-3, 2 * np.pi-1e-3, N), Vt)
 
     # Compute and print lift coefficient
-    Cl = cf.compute_lift_coefficient(x_mid, Cp, chord_length=1)
+    Cl = cf.compute_lift_coefficient(x, Gamma,V_inf, chord_length=1)
     print(f"Lift coefficient (Cl): {Cl}")
 
     # Plot induced velocity vectors

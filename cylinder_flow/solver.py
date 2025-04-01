@@ -25,7 +25,7 @@ def compute_RHS(N, V_inf, alpha, n_vect,t_vect):
     V_inf_vector = np.array([V_inf * np.cos(alpha), V_inf * np.sin(alpha)])
 
     for i in range(N):
-        RHS[i] = np.dot(n_vect[i,:], V_inf_vector)
+        RHS[i] = - np.dot(n_vect[i,:], V_inf_vector)
     # print(np.dot(n_vect, np.array([np.cos(alpha), np.sin(alpha)])))
     RHS[-1] = 0  # Enforce Kutta condition
 
@@ -87,18 +87,9 @@ def compute_tangential_velocity(N, V_inf, theta_mid, AN_3d, Gamma, AOA, t_vect,n
     """
     vel_vect = np.zeros((2,N))  
     Vt = np.zeros((N))
-    # Gamma = Gamma.reshape(-1)  # Ensure Gamma is a 1D vector
-
-    # print(np.shape(Gamma))
 
     # Compute induced velocities
     vel_vect = AN_3d@Gamma
-
-    # for j in range(N+1):
-    #     for i in range(N):
-    #         # Compute velocity components using a for loop
-    #         vel_vect[0,i] += AN_3d[0, i, j] * Gamma[j]
-    #         vel_vect[1,i] += AN_3d[1, i, j] * Gamma[j]
 
     residual = np.linalg.norm(vel_vect[0,:]*n_vect[:,0] + vel_vect[1,:]*n_vect[:,1]   - RHS[:-1])
     print(f"Residual Error: {residual:.5e}")
@@ -110,16 +101,10 @@ def compute_tangential_velocity(N, V_inf, theta_mid, AN_3d, Gamma, AOA, t_vect,n
     # Velocity correction
     velocity_correction = V_inf * np.array([np.cos(AOA), np.sin(AOA)])
     
-    vel_net = velocity_correction.reshape(-1,1) + vel_vect  
+    vel_net = velocity_correction.reshape(-1,1) + vel_vect
     
-    Vt = np.linalg.norm(vel_net,axis = 0)
-    Vt = vel_vect[0,:]*t_vect[:,0] + vel_vect[1,:]*t_vect[:,1]
-    
-    # Compute tangential velocity component
-    # Vt =   vel_vect[1,:] + velocity_correction[:,1]
-    # for i in range(N):
-    #     # Total tangential velocity including freestream contribution
-    #     Vt[i] = vel_vect[1,i]  + velocity_correction[1]*t_vect[i,1] + velocity_correction[0]*t_vect[i,0]
+    # Vt = vel_vect[1,:]*t_vect[:,1] + vel_vect[0,:]*t_vect[:,0]
+    Vt = -Gamma[:-1]/(2*np.pi*1/N)
 
     return Vt, vel_vect
 
@@ -158,7 +143,7 @@ def compute_pressure_coefficient(Vt, V_inf):
 #     Cl = (2 * Gamma_total) / (V_inf * 1)
 #     return Cl
 
-def compute_lift_coefficient(x, Cp, chord_length=1):
+def compute_lift_coefficient(x, Gamma,V_inf, chord_length=1):
     """
     Calculate the lift coefficient (C_L) using surface pressure coefficient values.
     
@@ -170,11 +155,13 @@ def compute_lift_coefficient(x, Cp, chord_length=1):
     Returns:
     float: Computed lift coefficient (C_L)
     """
-    if len(x) != len(Cp):
-        raise ValueError("x_coords and cp_values must have the same length")
+    # if len(x) != len(Cp):
+    #     raise ValueError("x_coords and cp_values must have the same length")
     
-    N = len(x) - 1  # Number of panels
-    Cl = sum(Cp[i] * (x[i] - x[i+1]) for i in range(N)) / chord_length
+    # N = len(x) - 1  # Number of panels
+    # Cl = sum(Cp[i] * (x[i] - x[i+1]) for i in range(N)) / chord_length
+
+    Cl = 2*np.sum(Gamma)/(np.abs(np.max(x)-np.min(x))*V_inf)
     
     return Cl
 

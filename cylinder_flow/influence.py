@@ -84,11 +84,7 @@ def compute_AN_3d_matrix(N, x, y, x_mid, y_mid,n_vect,t_vect):
 
             t_induced = - np.array([dx / r, dy / r])
             n_induced = np.array([dy/ r,  -dx / r])
-
-          
-        
-            # AN_3d[0, i, j] = (np.dot(n_induced,n_vect[i,:])) / (2 * np.pi*r)
-            # AN_3d[1, i, j] = (np.dot(n_induced,t_vect[i,:])) / (2 * np.pi*r)
+            
             AN_3d[:, i, j] = n_induced / (2 * np.pi *r )
 
 

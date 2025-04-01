@@ -96,7 +96,7 @@ def pre_processing(x, y):
     r = np.sqrt(dx**2 + dy**2)
 
     # Tangential and normal vectors
-    t_vect = np.array([dx/r, dy/r]).T  
+    t_vect = -np.array([dx/r, dy/r]).T  
     n_vect = np.array([dy/r, -dx/r]).T  
 
     return x_mid, y_mid, theta_mid, t_vect, n_vect, x, y
